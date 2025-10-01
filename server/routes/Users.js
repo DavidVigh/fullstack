@@ -5,7 +5,13 @@ const { Users } = require('../models');
 
 router.get('/', async (req, res) => {
     const users = await Users.findAll();
-    res.status(204).json(users);
+    res.json(users);
+});
+
+router.get('/:id', async (req, res) => {
+    const { id } = req.params
+    const user = await Users.findByPk(id);
+    res.json(user);
 });
 
 router.post('/', async (req, res) => {
