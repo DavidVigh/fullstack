@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const Users = sequelize.define(
-    "Users",
+  const User = sequelize.define(
+    "User",
     {
       fullname: {
         type: DataTypes.STRING,
@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     }
   );
-  
-  return Users;
+
+  User.associate = (models) => {
+    User.hasMany(models.Post, { foreignKey: "userId", onDelete: "CASCADE" });
+  };
+
+  return User;
 };
