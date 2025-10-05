@@ -4,7 +4,16 @@ const router = express.Router();
 const { User, Post, Tag } = require('../models');
 
 router.get('/', async (req, res) => {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      include: [
+        {
+          model: Post,
+          include: [{
+            model: Tag,
+            through: { attributes: [] }
+          }]
+        }
+      ]});
     res.json(users);
 });
 
@@ -14,7 +23,10 @@ router.get('/:id', async (req, res) => {
       include: [
         {
           model: Post,
-          include: [Tag]
+          include: [{
+            model: Tag,
+            through: { attributes: [] }
+          }]
         }
       ]}
     );
