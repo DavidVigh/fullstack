@@ -3,6 +3,8 @@ import { User, Post } from "@/app/types"
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState, use } from "react";
+import Tags, { CardTags } from "@/app/components/tags"
+import { motion, AnimatePresence } from "motion/react";
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {
     const reqParams = use(params);
@@ -21,23 +23,6 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         fetchUserPosts();
     }, [userId]);
 
-    useEffect(() => {
-        const container = document.getElementById("horizontal-scroll");
-        if (!container) return;
-
-        const onWheel = (e: WheelEvent) => {
-            e.preventDefault();              // prevent vertical scroll
-            container.scrollLeft += e.deltaY; // vertical movement scrolls horizontally
-        };
-
-        container.addEventListener("wheel", onWheel);
-
-        return () => container.removeEventListener("wheel", onWheel);
-    }, []);
-
-
-    console.log(user);
-
     if (user) {
         if (user.Posts.length > 0) {
             const posts: Post[] = user.Posts;
@@ -50,26 +35,22 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                     <div id="horizontal-scroll"
                         className="flex flex-wrap justify-center gap-8">
                         {posts.map((post) => (
-                            <div key={post.id}
+                            <motion.div
+                                transition={{ duration: 0.35, ease: "easeInOut" }}
+                                layout
+
+                                key={post.id}
                                 className="bg-slate-900 p-4 
                             w-xs lg:min-w-md rounded-2xl
                             flex flex-col justify-evenly gap-2">
                                 <h2 className="text-2xl">{post.title}</h2>
-                                <p className="text-lg">Post id: <span className="bg-slate-600 px-2 py-1 rounded-2xl">{post.id}</span></p>
+                                <p className="text-lg">Post id: <span className="bg-slate-600 px-2 rounded-2xl">{post.id}</span></p>
                                 <p>Author: {post.author ?? "Annonymus"}</p>
-                                <p>Tags:</p>
-                                {post.Tags.length > 0 ? (
-                                    <div className="flex flex-row flex-wrap gap-2">
-                                        {post.Tags.map((tag) => (
-                                            <p key={tag.id}
-                                                className="bg-blue-950 px-2 rounded-2xl border-1 border-sky-600">
-                                                <span className="text-blue-500 me-1">#</span>{tag.name}
-                                            </p>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-400 ps-5">No tags given</p>
-                                )}
+
+                                <div className="">
+                                    <p className="text-md mb-2"> Tags:</p>
+                                    <CardTags tags={post.Tags} />
+                                </div>
 
                                 <p>Content:</p>
                                 <p className="px-4">{post.content.slice(0, 40)}...</p>
@@ -80,16 +61,23 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                                     </button>
 
                                     <Link href={{
-                                        pathname: `/users/${userId}/posts/${post.id}`
+                                        pathname: `/posts/${post.id}`
                                     }}
                                         className="bg-blue-600 hover:bg-blue-700 transition-all px-4 py-2 self-end text-center rounded-2xl">
                                         See Post</Link>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))
 
                         }
                     </div>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div className="container mx-auto bg-slate-900">
+                    <h1>{"No post(s) currently avaliable"}</h1>
                 </div>
             )
         }
