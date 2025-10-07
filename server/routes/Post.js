@@ -1,16 +1,23 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { Post, User, Tag } = require('../models');
+const { Post, User, Tag } = require("../models");
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const posts = await Post.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
       include: [
         {
+          model: User,
+          attributes: ['id', 'fullname', 'username', 'email']
+        },
+        {
           model: Tag,
-          through: { attributes: [] } // hide PostTag details
+          attributes: ['id', 'name']
         }
-      ]
+      ],
     });
 
     res.json(posts);
@@ -20,20 +27,20 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
-  const { id } = req.params
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
   const post = await Post.findByPk(id, {
     include: [
       {
         model: Tag,
-        through: { attributes: [] }
-      }
-    ]
+        through: { attributes: [] },
+      },
+    ],
   });
   res.json(post);
 });
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { userId } = req.body;
 
