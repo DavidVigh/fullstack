@@ -1,7 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Jost } from "next/font/google";
 import "./globals.css";
 import Navbar from "./layouts/navbar";
+
+import localFont from "next/font/local";
+
+const alanSans = localFont({
+  src: "../public/fonts/AlanSans-Regular.ttf",
+  variable: "--font-alan-sans",
+});
+
+const jost = Jost({
+  variable: "--font-jost",
+  subsets: ["latin"]
+});
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,10 +37,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Navbar/>
+        <body className={`${jost.className} ${alanSans.className} ${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Navbar />
         {children}
       </body>
     </html>
